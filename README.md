@@ -1,5 +1,5 @@
 # Combo
-A simple input sequence system
+Input sequences made easy
 ---
 
 Combo is a lightweight library designed to provide an easy way to add input sequences to your Roblox game. On initialization, it automatically starts listening for the actions defined in its configuration, and allows you to easily define sequences using said actions.
