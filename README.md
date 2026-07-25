@@ -126,7 +126,7 @@ Combo:Destroy()
 ```
 
 ```lua
-Combo:GetEnabled
+Combo:GetEnabled()
 
 -- Returns whether the current Combo instance is enabled
 ```
