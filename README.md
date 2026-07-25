@@ -22,14 +22,16 @@ type SequenceFrame = {
 	MinDelay: number?,
 	MaxDelay: number?,
 }
-
+```
+```lua
 type Sequence = {
 	Name: string,
 	Sequence: {SequenceFrame},
 	Priority: number,
 	ClearBuffer: boolean?,
 }
-
+```
+```lua
 type SequenceSignal = {
 	Name: string,
 	Signal: Signal.Signal
@@ -40,7 +42,8 @@ type BufferedInput = {
 	Modifiers  : {string},
 	Time  : number,
 }
-
+```
+```lua
 type Combo = {
 	_Buffer: {BufferedInput},
 	_Held: {string},
