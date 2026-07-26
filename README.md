@@ -130,25 +130,25 @@ Combo:Destroy()
 ```
 
 ```lua
-Combo:GetEnabled()
+Combo:GetEnabled(): boolean
 
 -- Returns whether the current Combo instance is enabled
 ```
 
 ```lua
-Combo:GetSequences()
+Combo:GetSequences(): {Sequence}
 
 -- Returns the full list of registered sequences
 ```
 
 ```lua
-Combo:GetBuffer()
+Combo:GetBuffer(): {BufferedInput}
 
 -- Returns the full list of stored actions
 ```
 
 ```lua
-Combo:GetHeld()
+Combo:GetHeld(): {string}
 
 -- Returns the full list of currently held actions
 ```
