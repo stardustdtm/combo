@@ -2,12 +2,12 @@
 
 --[[
 	
-	An input sequence handler by StardustDTM
-	Written for my (currently on-hold) game "Maledict"
+	-- An input sequence handler by StardustDTM
+	-- Written for my (currently on-hold) game "Maledict"
 	
 	
 	
-	Usage examples:
+	--Usage examples:
 	
 	local ComboModule = require(path.to.Combo)
 	local Combo = ComboModule.new()
@@ -35,7 +35,13 @@
 	Combo:AddSequence({
 		Name = "Stinger",
 		Sequence = {
-			{Input = "M1", Modifiers = {"Forward"}}
+			{
+				Input = "M1",
+				Condition = function()
+					-- Moving direction check
+					-- If forward then return true
+				end
+			}
 		},
 		Priority = 3,
 		ClearBuffer = true
@@ -54,7 +60,7 @@
 	end)
 	
 	-- I love Devil May Cry if you couldn't tell
-
+	
 ]]
 
 -----------------------------------------------------------------------------------------------
@@ -73,6 +79,7 @@ export type SequenceFrame = {
 	Modifiers: {string}?,
 	MinDelay: number?,
 	MaxDelay: number?,
+	Condition: (() -> boolean)?,
 }
 
 export type Sequence = {
@@ -114,6 +121,9 @@ export type Combo = {
 	ClearBuffer: (self: Combo) -> (),
 	RemoveSequence: (self: Combo, Sequence: string) -> (),
 	GetEnabled: (self: Combo) -> boolean,
+	GetSequences: (self: Combo) -> {Sequence},
+	GetBuffer: (self: Combo) -> {BufferedInput},
+	GetHeld: (self: Combo) -> {string},
 
 	_RegisterAction: (self: Combo, Action: string) -> (),
 	_CleanBuffer: (self: Combo) -> (),
@@ -237,20 +247,19 @@ function Combo:_CheckForSequence(Sequence: Sequence)
 		if not BufferInput then return false end
 
 		if BufferInput.Input == Input.Input then
-			if Input.Modifiers and not self:_CheckModifiers(Input.Modifiers) then
-				return false
-			end
+			if Input.Modifiers and not self:_CheckModifiers(Input.Modifiers) then return false end
+			
+			if Input.Condition and not Input.Condition() then return false end
 
 			if PreviousMatchTime then
 				local Delay = PreviousMatchTime - BufferInput.Time
 				local NextFrame = CheckedSequence[i + 1]
+				
+				local MinDelay = NextFrame.MinDelay or Config.DEFAULT_MIN_DELAY
+				local MaxDelay = NextFrame.MaxDelay or Config.DEFAULT_MAX_DELAY
 
-				if NextFrame and NextFrame.MinDelay and Delay < NextFrame.MinDelay then
-					return false
-				end
-				if NextFrame and NextFrame.MaxDelay and Delay > NextFrame.MaxDelay then
-					return false
-				end
+				if NextFrame and MinDelay and Delay < MinDelay then return false end
+				if NextFrame and MaxDelay and Delay > MaxDelay then return false end
 			end
 
 			PreviousMatchTime = BufferInput.Time
@@ -419,11 +428,12 @@ function Combo:RemoveSequence(Sequence: string)
 	
 	for i, v in self._Sequences do
 		if v.Name == Sequence then
-			Removed = table.find(self._Sequences, v)
+			Removed = i
 		end
 	end
 	
 	if Removed then
+		table.remove(self._Signals, Removed)
 		table.remove(self._Sequences, Removed)
 	end
 end
@@ -444,10 +454,37 @@ end
 --[[
 	Returns whether the current Combo instance is enabled
 ]]
-function Combo:GetEnabled(Name: string): boolean
+function Combo:GetEnabled(): boolean
 	local self: Combo = self
 	
 	return self._Enabled
+end
+
+--[[
+	Returns the full list of registered sequences
+]]
+function Combo:GetSequences(): {Sequence}
+	local self: Combo = self
+
+	return self._Sequences
+end
+
+--[[
+	Returns the full list of stored actions
+]]
+function Combo:GetBuffer(): {BufferedInput}
+	local self: Combo = self
+
+	return self._Buffer
+end
+
+--[[
+	Returns the full list of currently held actions
+]]
+function Combo:GetHeld(): {string}
+	local self: Combo = self
+
+	return self._Held
 end
 
 -----------------------------------------------------------------------------------------------
