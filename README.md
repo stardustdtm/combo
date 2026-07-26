@@ -21,6 +21,7 @@ type SequenceFrame = {
 	Modifiers: {string}?,
 	MinDelay: number?,
 	MaxDelay: number?,
+	Condition: (() -> boolean)?
 }
 ```
 ```lua
@@ -65,6 +66,9 @@ type Combo = {
 	ClearBuffer: (self: Combo) -> (),
 	RemoveSequence: (self: Combo, Sequence: string) -> (),
 	GetEnabled: (self: Combo) -> boolean,
+	GetSequences: (self: Combo) -> {Sequence},
+	GetBuffer: (self: Combo) -> {BufferedInput},
+	GetHeld: (self: Combo) -> {string},
 
 	_RegisterAction: (self: Combo, Action: string) -> (),
 	_CleanBuffer: (self: Combo) -> (),
@@ -129,4 +133,22 @@ Combo:Destroy()
 Combo:GetEnabled()
 
 -- Returns whether the current Combo instance is enabled
+```
+
+```lua
+Combo:GetSequences()
+
+-- Returns the full list of registered sequences
+```
+
+```lua
+Combo:GetBuffer()
+
+-- Returns the full list of stored actions
+```
+
+```lua
+Combo:GetHeld()
+
+-- Returns the full list of currently held actions
 ```
